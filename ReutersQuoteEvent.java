@@ -7,4 +7,12 @@ public class ReutersQuoteEvent extends TradeEvent {
         this.symbol = symbol;
         this.bidAskSpread = bidAskSpread;
     }
+
+    @Override
+    public void dispatch() {
+        System.out.println("[REUTERS QUOTE DISPATCH] Ticker: " + symbol +
+                " | Sender: " + senderId +
+                " | Base Price: $" + String.format("%.2f", basePrice) +
+                " | Bid-Ask Spread: $" + String.format("%.4f", bidAskSpread));
+    }
 }
