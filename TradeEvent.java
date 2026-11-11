@@ -14,4 +14,6 @@ public abstract class TradeEvent {
     public String getSenderId() { return senderId; }
     public LocalDateTime getTimestamp() { return timestamp; }
     public double getBasePrice() { return basePrice; }
+
+    public abstract void dispatch();
 }
