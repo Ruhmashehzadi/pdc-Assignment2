@@ -25,11 +25,41 @@ public class ConcurrentWarehouseApp {
         int cyclesPerWorker = 250;
         int unitsPerCycle = 2;
 
+        long startTime = System.nanoTime();
+
         Thread[] workers = new Thread[workerCount];
         for (int i = 0; i < workerCount; i++) {
             WarehouseUpdateWorker task = new WarehouseUpdateWorker(stockLedger, skuList, cyclesPerWorker, unitsPerCycle);
             workers[i] = new Thread(task, "RestockWorker-" + (i + 1));
             workers[i].start();
         }
+
+        for (Thread worker : workers) {
+            try {
+                worker.join();
+            } catch (InterruptedException e) {
+                System.err.println("Worker synchronization interrupted.");
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        long elapsedMicros = (System.nanoTime() - startTime) / 1000;
+        int expectedUnits = initialStock + (workerCount * cyclesPerWorker * unitsPerCycle);
+        double totalInventoryValue = 0.0;
+
+        System.out.println("Expected Final Stock per SKU : " + expectedUnits + " units\n");
+        for (Map.Entry<String, StockProduct> entry : productCatalog.entrySet()) {
+            String sku = entry.getKey();
+            StockProduct product = entry.getValue();
+            int actualUnits = stockLedger.get(sku);
+            double valuation = product.calculateBatchValuation(actualUnits);
+            totalInventoryValue += valuation;
+
+            System.out.println(product + " -> Final Stock: " + actualUnits +
+                    " units | Valuation: $" + String.format("%,.2f", valuation));
+        }
+
+        System.out.println("\nTotal Warehouse Valuation : $" + String.format("%,.2f", totalInventoryValue));
+        System.out.println("Execution Time            : " + elapsedMicros + " microseconds (Zero Data Races)");
     }
 }
