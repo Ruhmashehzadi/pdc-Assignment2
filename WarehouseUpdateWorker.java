@@ -7,6 +7,16 @@ public class WarehouseUpdateWorker implements Runnable {
     private final int restockCycles;
     private final int unitsPerCycle;
 
+    public WarehouseUpdateWorker(ConcurrentHashMap<String, Integer> stockLedger,
+                                 List<String> targetSkus,
+                                 int restockCycles,
+                                 int unitsPerCycle) {
+        this.stockLedger = stockLedger;
+        this.targetSkus = targetSkus;
+        this.restockCycles = restockCycles;
+        this.unitsPerCycle = unitsPerCycle;
+    }
+
     @Override
     public void run() {
     }
