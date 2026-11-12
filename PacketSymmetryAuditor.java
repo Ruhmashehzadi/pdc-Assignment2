@@ -24,4 +24,16 @@ public class PacketSymmetryAuditor {
 
         return true;
     }
+
+    public static void main(String[] args) {
+        System.out.println("=== Zero-Trust Packet Symmetry Auditor ===\n");
+
+        String[] testPayloads = {"RADAR", "PKT909TKP", "NET_SYNC", "LEVEL", "101101", "CORRUPT_X"};
+
+        for (String packet : testPayloads) {
+            boolean isSymmetric = auditPayload(packet);
+            String status = isSymmetric ? "VERIFIED (Symmetric)" : "REJECTED (Asymmetric/Tampered)";
+            System.out.println("Payload: " + String.format("%-12s", packet) + " -> Status: " + status);
+        }
+    }
 }
