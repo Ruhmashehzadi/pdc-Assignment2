@@ -45,8 +45,17 @@ public class SensorGridMonitorApp {
         double globalMax = Math.max(maxTaskLeft.getLocalMax(), maxTaskRight.getLocalMax());
         long parallelMicros = (System.nanoTime() - parallelStart) / 1000;
 
+        // Sequential sanity check
+        double seqMin = telemetryStream[0];
+        double seqMax = telemetryStream[0];
+        for (int i = 1; i < totalReadings; i++) {
+            if (telemetryStream[i] < seqMin) seqMin = telemetryStream[i];
+            if (telemetryStream[i] > seqMax) seqMax = telemetryStream[i];
+        }
+
         System.out.println("Parallel Global Minimum Reading : " + String.format("%.4f", globalMin) + " C");
         System.out.println("Parallel Global Maximum Reading : " + String.format("%.4f", globalMax) + " C");
         System.out.println("Parallel Reduction Time         : " + parallelMicros + " microseconds");
+        System.out.println("Sequential Accuracy Match       : " + (globalMin == seqMin && globalMax == seqMax));
     }
 }
