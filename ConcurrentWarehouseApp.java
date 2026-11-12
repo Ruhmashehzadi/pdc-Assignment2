@@ -1,4 +1,4 @@
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +20,16 @@ public class ConcurrentWarehouseApp {
             stockLedger.put(sku, initialStock);
         }
 
-        System.out.println("Initialized " + stockLedger.size() + " SKUs with " + initialStock + " starting units each.");
+        List<String> skuList = new ArrayList<>(productCatalog.keySet());
+        int workerCount = 4;
+        int cyclesPerWorker = 250;
+        int unitsPerCycle = 2;
+
+        Thread[] workers = new Thread[workerCount];
+        for (int i = 0; i < workerCount; i++) {
+            WarehouseUpdateWorker task = new WarehouseUpdateWorker(stockLedger, skuList, cyclesPerWorker, unitsPerCycle);
+            workers[i] = new Thread(task, "RestockWorker-" + (i + 1));
+            workers[i].start();
+        }
     }
 }
