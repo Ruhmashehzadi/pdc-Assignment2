@@ -24,6 +24,24 @@ public class SensorGridMonitorApp {
         Thread maxWorker1 = new Thread(maxTaskLeft, "MaxWorker-Left");
         Thread maxWorker2 = new Thread(maxTaskRight, "MaxWorker-Right");
 
-        System.out.println("Configured 4 partition workers across split boundary index " + splitPoint + ".");
+        long startTime = System.nanoTime();
+
+        minWorker1.start();
+        minWorker2.start();
+        maxWorker1.start();
+        maxWorker2.start();
+
+        try {
+            minWorker1.join();
+            minWorker2.join();
+            maxWorker1.join();
+            maxWorker2.join();
+        } catch (InterruptedException e) {
+            System.err.println("Worker synchronization interrupted.");
+            Thread.currentThread().interrupt();
+        }
+
+        long elapsedMicros = (System.nanoTime() - startTime) / 1000;
+        System.out.println("All 4 parallel reduction workers synchronized in " + elapsedMicros + " microseconds.\n");
     }
 }
