@@ -21,6 +21,10 @@ public class StockProduct {
         return unitPrice;
     }
 
+    public double calculateBatchValuation(int quantity) {
+        return unitPrice * quantity;
+    }
+
     @Override
     public String toString() {
         return sku + " (" + productName + " @ $" + String.format("%.2f", unitPrice) + ")";
