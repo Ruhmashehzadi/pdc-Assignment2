@@ -8,5 +8,11 @@ public class MemoryLocalityBenchmarkApp {
         System.out.println("Allocating " + matrixSize + " x " + matrixSize + " matrix (" + totalCells + " double elements)...");
         GridTraversalEngine engine = new GridTraversalEngine(matrixSize);
         System.out.println("Matrix memory allocation complete.\n");
+
+        // JVM JIT warm-up cycle
+        double warmupSink = engine.computeRowMajorSum() + engine.computeColumnMajorSum();
+        if (warmupSink == -1.0) {
+            System.out.println("Unreachable guard");
+        }
     }
 }
