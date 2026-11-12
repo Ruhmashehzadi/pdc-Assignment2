@@ -25,4 +25,14 @@ public class GridTraversalEngine {
         }
         return accumulator;
     }
+
+    public double computeColumnMajorSum() {
+        double accumulator = 0.0;
+        for (int col = 0; col < dimension; col++) {
+            for (int row = 0; row < dimension; row++) {
+                accumulator += grid[row][col];
+            }
+        }
+        return accumulator;
+    }
 }
