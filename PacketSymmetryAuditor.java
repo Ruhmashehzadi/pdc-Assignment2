@@ -3,6 +3,19 @@ public class PacketSymmetryAuditor {
         if (payload == null || payload.isEmpty()) {
             return false;
         }
+
+        String normalized = payload.toUpperCase();
+        int len = normalized.length();
+
+        TransactionStack stack = new TransactionStack(len);
+        RequestQueue queue = new RequestQueue(len);
+
+        for (int i = 0; i < len; i++) {
+            char ch = normalized.charAt(i);
+            stack.push(ch);
+            queue.enqueue(ch);
+        }
+
         return true;
     }
 }
