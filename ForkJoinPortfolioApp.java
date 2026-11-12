@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.concurrent.ForkJoinPool;
 
 public class ForkJoinPortfolioApp {
     public static void main(String[] args) {
@@ -12,6 +13,11 @@ public class ForkJoinPortfolioApp {
             portfolio[i] = 1500.0 + (rng.nextDouble() * 8500.0);
         }
 
-        System.out.println("Initialized synthetic portfolio with " + totalAssets + " assets.");
+        ForkJoinPool workerPool = new ForkJoinPool();
+        System.out.println("Active ForkJoinPool Parallelism Level: " + workerPool.getParallelism() + " cores\n");
+
+        ParallelRiskCalculator baselineTask = new ParallelRiskCalculator(portfolio, 0, totalAssets);
+        double baselineRisk = workerPool.invoke(baselineTask);
+        System.out.println("Baseline Portfolio VaR (Risk Score): $" + String.format("%,.2f", baselineRisk));
     }
 }
