@@ -16,4 +16,18 @@ public class TransactionStack {
     public boolean isFull() {
         return top == maxCapacity - 1;
     }
+
+    public void push(char ch) {
+        if (isFull()) {
+            throw new IllegalStateException("TransactionStack overflow");
+        }
+        elements[++top] = ch;
+    }
+
+    public char pop() {
+        if (isEmpty()) {
+            throw new IllegalStateException("TransactionStack underflow");
+        }
+        return elements[top--];
+    }
 }
