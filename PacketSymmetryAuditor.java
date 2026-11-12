@@ -16,6 +16,12 @@ public class PacketSymmetryAuditor {
             queue.enqueue(ch);
         }
 
+        while (!stack.isEmpty() && !queue.isEmpty()) {
+            if (stack.pop() != queue.dequeue()) {
+                return false;
+            }
+        }
+
         return true;
     }
 }
