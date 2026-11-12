@@ -16,5 +16,20 @@ public class PortfolioThresholdTask extends RecursiveAction {
 
     @Override
     protected void compute() {
+        int span = endIdx - startIdx;
+        if (span <= SEGMENT_LIMIT) {
+            for (int i = startIdx; i < endIdx; i++) {
+                if (assetHoldings[i] > exposureCap) {
+                    assetHoldings[i] *= 0.95; // Apply 5% stress volatility adjustment
+                }
+            }
+            return;
+        }
+
+        int midIdx = startIdx + (span / 2);
+        PortfolioThresholdTask leftSegment = new PortfolioThresholdTask(assetHoldings, startIdx, midIdx, exposureCap);
+        PortfolioThresholdTask rightSegment = new PortfolioThresholdTask(assetHoldings, midIdx, endIdx, exposureCap);
+
+        invokeAll(leftSegment, rightSegment);
     }
 }
