@@ -20,6 +20,12 @@ public class MemoryLocalityBenchmarkApp {
         long rowEnd = System.nanoTime();
         double rowDurationMs = (rowEnd - rowStart) / 1_000_000.0;
 
+        long colStart = System.nanoTime();
+        double colSum = engine.computeColumnMajorSum();
+        long colEnd = System.nanoTime();
+        double colDurationMs = (colEnd - colStart) / 1_000_000.0;
+
         System.out.println("[Row-Major Traversal]    Time: " + String.format("%.3f", rowDurationMs) + " ms | Checksum: " + String.format("%.2f", rowSum));
+        System.out.println("[Column-Major Traversal] Time: " + String.format("%.3f", colDurationMs) + " ms | Checksum: " + String.format("%.2f", colSum));
     }
 }
