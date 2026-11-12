@@ -11,7 +11,18 @@ public class ParallelMaxSearch implements Runnable {
         this.localMax = Double.NEGATIVE_INFINITY;
     }
 
+    public double getLocalMax() {
+        return localMax;
+    }
+
     @Override
     public void run() {
+        double currentMax = sensorReadings[fromIndex];
+        for (int i = fromIndex + 1; i < toIndex; i++) {
+            if (sensorReadings[i] > currentMax) {
+                currentMax = sensorReadings[i];
+            }
+        }
+        this.localMax = currentMax;
     }
 }
