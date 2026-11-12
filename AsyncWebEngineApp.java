@@ -7,5 +7,13 @@ public class AsyncWebEngineApp {
 
         System.out.println("Initial State (" + telemetryWorker.getName() + "): " + telemetryWorker.getState());
         System.out.println("Initial State (Async-Log-Writer): " + logWorker.getState() + "\n");
+
+        long startTime = System.currentTimeMillis();
+
+        telemetryWorker.start();
+        logWorker.start();
+
+        System.out.println("Post-Start State (" + telemetryWorker.getName() + "): " + telemetryWorker.getState());
+        System.out.println("Post-Start State (Async-Log-Writer): " + logWorker.getState() + "\n");
     }
 }
