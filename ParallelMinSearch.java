@@ -17,5 +17,12 @@ public class ParallelMinSearch implements Runnable {
 
     @Override
     public void run() {
+        double currentMin = sensorReadings[fromIndex];
+        for (int i = fromIndex + 1; i < toIndex; i++) {
+            if (sensorReadings[i] < currentMin) {
+                currentMin = sensorReadings[i];
+            }
+        }
+        this.localMin = currentMin;
     }
 }
