@@ -19,5 +19,10 @@ public class ForkJoinPortfolioApp {
         ParallelRiskCalculator baselineTask = new ParallelRiskCalculator(portfolio, 0, totalAssets);
         double baselineRisk = workerPool.invoke(baselineTask);
         System.out.println("Baseline Portfolio VaR (Risk Score): $" + String.format("%,.2f", baselineRisk));
+
+        double exposureThreshold = 7500.0;
+        PortfolioThresholdTask stressTask = new PortfolioThresholdTask(portfolio, 0, totalAssets, exposureThreshold);
+        workerPool.invoke(stressTask);
+        System.out.println("Applied 5% stress volatility cap on assets exceeding $" + exposureThreshold);
     }
 }
