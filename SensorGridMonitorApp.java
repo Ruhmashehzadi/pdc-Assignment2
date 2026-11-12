@@ -9,9 +9,21 @@ public class SensorGridMonitorApp {
         Random rng = new Random(108);
 
         for (int i = 0; i < gridSize; i++) {
-            telemetryData[i] = -15.0 + (rng.nextDouble() * 110.0); // Range: -15.0°C to +95.0°C
+            telemetryData[i] = -15.0 + (rng.nextDouble() * 110.0);
         }
 
-        System.out.println("Loaded " + gridSize + " IoT sensor telemetry readings into memory.");
+        int splitPoint = gridSize / 2;
+
+        ParallelMinSearch minTaskLeft = new ParallelMinSearch(telemetryData, 0, splitPoint);
+        ParallelMinSearch minTaskRight = new ParallelMinSearch(telemetryData, splitPoint, gridSize);
+        ParallelMaxSearch maxTaskLeft = new ParallelMaxSearch(telemetryData, 0, splitPoint);
+        ParallelMaxSearch maxTaskRight = new ParallelMaxSearch(telemetryData, splitPoint, gridSize);
+
+        Thread minWorker1 = new Thread(minTaskLeft, "MinWorker-Left");
+        Thread minWorker2 = new Thread(minTaskRight, "MinWorker-Right");
+        Thread maxWorker1 = new Thread(maxTaskLeft, "MaxWorker-Left");
+        Thread maxWorker2 = new Thread(maxTaskRight, "MaxWorker-Right");
+
+        System.out.println("Configured 4 partition workers across split boundary index " + splitPoint + ".");
     }
 }
