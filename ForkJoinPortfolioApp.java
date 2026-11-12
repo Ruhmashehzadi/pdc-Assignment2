@@ -16,6 +16,8 @@ public class ForkJoinPortfolioApp {
         ForkJoinPool workerPool = new ForkJoinPool();
         System.out.println("Active ForkJoinPool Parallelism Level: " + workerPool.getParallelism() + " cores\n");
 
+        long startTime = System.nanoTime();
+
         ParallelRiskCalculator baselineTask = new ParallelRiskCalculator(portfolio, 0, totalAssets);
         double baselineRisk = workerPool.invoke(baselineTask);
         System.out.println("Baseline Portfolio VaR (Risk Score): $" + String.format("%,.2f", baselineRisk));
@@ -24,5 +26,15 @@ public class ForkJoinPortfolioApp {
         PortfolioThresholdTask stressTask = new PortfolioThresholdTask(portfolio, 0, totalAssets, exposureThreshold);
         workerPool.invoke(stressTask);
         System.out.println("Applied 5% stress volatility cap on assets exceeding $" + exposureThreshold);
+
+        ParallelRiskCalculator adjustedTask = new ParallelRiskCalculator(portfolio, 0, totalAssets);
+        double postStressRisk = workerPool.invoke(adjustedTask);
+
+        long elapsedMicros = (System.nanoTime() - startTime) / 1000;
+        workerPool.shutdown();
+
+        System.out.println("Post-Stress Portfolio VaR (Risk Score): $" + String.format("%,.2f", postStressRisk));
+        System.out.println("Risk Reduction Delta: $" + String.format("%,.2f", (baselineRisk - postStressRisk)));
+        System.out.println("\nFork/Join execution completed in " + elapsedMicros + " microseconds.");
     }
 }
