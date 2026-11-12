@@ -14,5 +14,12 @@ public class MemoryLocalityBenchmarkApp {
         if (warmupSink == -1.0) {
             System.out.println("Unreachable guard");
         }
+
+        long rowStart = System.nanoTime();
+        double rowSum = engine.computeRowMajorSum();
+        long rowEnd = System.nanoTime();
+        double rowDurationMs = (rowEnd - rowStart) / 1_000_000.0;
+
+        System.out.println("[Row-Major Traversal]    Time: " + String.format("%.3f", rowDurationMs) + " ms | Checksum: " + String.format("%.2f", rowSum));
     }
 }
