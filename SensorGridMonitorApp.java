@@ -2,29 +2,29 @@ import java.util.Random;
 
 public class SensorGridMonitorApp {
     public static void main(String[] args) {
-        System.out.println("=== IoT Sensor Grid Parallel Min/Max Monitor ===\n");
+        System.out.println("=== IoT Sensor Grid Parallel Min/Max Reduction Engine ===\n");
 
-        int gridSize = 100000;
-        double[] telemetryData = new double[gridSize];
+        int totalReadings = 100000;
+        double[] telemetryStream = new double[totalReadings];
         Random rng = new Random(108);
 
-        for (int i = 0; i < gridSize; i++) {
-            telemetryData[i] = -15.0 + (rng.nextDouble() * 110.0);
+        for (int i = 0; i < totalReadings; i++) {
+            telemetryStream[i] = -15.0 + (rng.nextDouble() * 110.0);
         }
 
-        int splitPoint = gridSize / 2;
+        int midPoint = totalReadings / 2;
 
-        ParallelMinSearch minTaskLeft = new ParallelMinSearch(telemetryData, 0, splitPoint);
-        ParallelMinSearch minTaskRight = new ParallelMinSearch(telemetryData, splitPoint, gridSize);
-        ParallelMaxSearch maxTaskLeft = new ParallelMaxSearch(telemetryData, 0, splitPoint);
-        ParallelMaxSearch maxTaskRight = new ParallelMaxSearch(telemetryData, splitPoint, gridSize);
+        ParallelMinSearch minTaskLeft = new ParallelMinSearch(telemetryStream, 0, midPoint);
+        ParallelMinSearch minTaskRight = new ParallelMinSearch(telemetryStream, midPoint, totalReadings);
+        ParallelMaxSearch maxTaskLeft = new ParallelMaxSearch(telemetryStream, 0, midPoint);
+        ParallelMaxSearch maxTaskRight = new ParallelMaxSearch(telemetryStream, midPoint, totalReadings);
 
         Thread minWorker1 = new Thread(minTaskLeft, "MinWorker-Left");
         Thread minWorker2 = new Thread(minTaskRight, "MinWorker-Right");
         Thread maxWorker1 = new Thread(maxTaskLeft, "MaxWorker-Left");
         Thread maxWorker2 = new Thread(maxTaskRight, "MaxWorker-Right");
 
-        long startTime = System.nanoTime();
+        long parallelStart = System.nanoTime();
 
         minWorker1.start();
         minWorker2.start();
@@ -37,11 +37,16 @@ public class SensorGridMonitorApp {
             maxWorker1.join();
             maxWorker2.join();
         } catch (InterruptedException e) {
-            System.err.println("Worker synchronization interrupted.");
+            System.err.println("Sensor reduction barrier interrupted.");
             Thread.currentThread().interrupt();
         }
 
-        long elapsedMicros = (System.nanoTime() - startTime) / 1000;
-        System.out.println("All 4 parallel reduction workers synchronized in " + elapsedMicros + " microseconds.\n");
+        double globalMin = Math.min(minTaskLeft.getLocalMin(), minTaskRight.getLocalMin());
+        double globalMax = Math.max(maxTaskLeft.getLocalMax(), maxTaskRight.getLocalMax());
+        long parallelMicros = (System.nanoTime() - parallelStart) / 1000;
+
+        System.out.println("Parallel Global Minimum Reading : " + String.format("%.4f", globalMin) + " C");
+        System.out.println("Parallel Global Maximum Reading : " + String.format("%.4f", globalMax) + " C");
+        System.out.println("Parallel Reduction Time         : " + parallelMicros + " microseconds");
     }
 }
