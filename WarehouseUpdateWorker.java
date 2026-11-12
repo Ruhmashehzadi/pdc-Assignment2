@@ -19,5 +19,10 @@ public class WarehouseUpdateWorker implements Runnable {
 
     @Override
     public void run() {
+        for (int cycle = 0; cycle < restockCycles; cycle++) {
+            for (String sku : targetSkus) {
+                stockLedger.merge(sku, unitsPerCycle, Integer::sum);
+            }
+        }
     }
 }
